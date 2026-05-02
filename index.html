@@ -110,7 +110,7 @@
   /* Video banner */
   .hero-video{
     position:absolute;inset:0;width:100%;height:100%;
-    overflow:hidden;z-index:0;
+    object-fit:cover;z-index:0;
     pointer-events:none;
     opacity:1;
   }
@@ -754,7 +754,7 @@
 <header class="nav">
   <div class="container nav-inner">
     <a href="#home" class="logo-wrap" aria-label="Float 360">
-      <img src="LogoFloat1_512_512witrood.png" alt="Float 360 logo" />
+      <img src="logofloat1-512-512-wit-rood.png" alt="Float 360 logo" />
     </a>
     <nav class="nav-links" id="navLinks">
       <a href="#diensten">Diensten</a>
@@ -771,15 +771,9 @@
 
 <!-- HERO -->
 <section class="hero" id="home">
-  <div class="hero-video" id="heroBannerVideo" aria-hidden="true">
-    <iframe
-      src="https://player.vimeo.com/video/1188596377?autoplay=1&loop=1&muted=1&background=1&controls=0&dnt=1"
-      frameborder="0"
-      allow="autoplay; fullscreen"
-      allowfullscreen
-      style="position:absolute;top:50%;left:50%;width:177.78vh;min-width:100%;min-height:56.25vw;height:56.25vw;transform:translate(-50%,-50%);pointer-events:none;border:none;"
-    ></iframe>
-  </div>
+  <video class="hero-video" autoplay muted loop playsinline preload="auto" poster="logofloat1-512-512-wit-rood.png" id="heroBannerVideo">
+    <source src="showreel/bannerwebsite6kl.mp4" type="video/mp4" />
+  </video>
   <div class="hero-video-overlay"></div>
   <div class="container hero-grid">
     <div>
@@ -811,7 +805,7 @@
     <div class="hero-visual">
       <div class="ring r1"></div>
       <div class="ring r2"></div>
-      <img src="LogoFloat1_512_512witrood.png" alt="Float 360" class="hero-logo" />
+      <img src="logofloat1-512-512-wit-rood.png" alt="Float 360" class="hero-logo" />
     </div>
   </div>
 </section>
@@ -893,7 +887,7 @@
 
       <div class="svc-card reveal">
         <div class="svc-media">
-          <img class="svc-video-loop" src="asml-inspectie-1.jpg" alt="Thermografische inspectie van industriële installatie" loading="lazy" />
+          <img class="svc-video-loop" src="fotos-web/thermische-inspectie.jpg" alt="Thermografische inspectie van industriële installatie" loading="lazy" />
         </div>
         <div class="svc-icon">
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg>
@@ -970,7 +964,7 @@
 
       <div class="svc-card reveal" style="cursor:pointer" onclick="window.open('https://www.wouterborre.nl/bekijk-mijn-bouw-demo','_blank','noopener')" title="Bekijk de demo">
         <div class="svc-media">
-          <img class="svc-video-loop" src="bannerkijkmijnnieuwbouw.jpg" alt="Banner Bekijk mijn Nieuwbouw" loading="lazy" />
+          <img class="svc-video-loop" src="fotos-web/kijk-mijn-nieuwbouw-banner.jpg" alt="Banner Bekijk mijn Nieuwbouw" loading="lazy" />
         </div>
         <div class="svc-icon">
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
@@ -1194,17 +1188,17 @@
 
     <div class="team-grid reveal">
       <div class="team-card">
-        <div class="team-avatar"><img src="Bob_Rietveld.jpg" alt="Bob Rietveld" loading="lazy" /></div>
+        <div class="team-avatar"><img src="team/bob-rietveld.jpg" alt="Bob Rietveld" loading="lazy" /></div>
         <p class="team-name">Bob Rietveld</p>
         <p class="team-role">Videograaf &amp; piloot</p>
       </div>
       <div class="team-card">
-        <div class="team-avatar"><img src="Wouter.webp" alt="Wouter Borre" loading="lazy" /></div>
+        <div class="team-avatar"><img src="team/wouter.webp" alt="Wouter Borre" loading="lazy" /></div>
         <p class="team-name">Wouter Borre</p>
         <p class="team-role">Piloot &amp; fotograaf</p>
       </div>
       <div class="team-card">
-        <div class="team-avatar"><img src="Frits_Muller.jpeg" alt="Frits Muller" loading="lazy" /></div>
+        <div class="team-avatar"><img src="team/frits-muller.jpeg" alt="Frits Muller" loading="lazy" /></div>
         <p class="team-name">Frits Muller</p>
         <p class="team-role">Safety Manager</p>
       </div>
@@ -1214,13 +1208,13 @@
 
     <div class="team-grid reveal" style="max-width:740px">
       <div class="team-card team-card--partner">
-        <div class="team-avatar"><img src="Mark-de-Haan-Aeret-1.webp" alt="Mark de Haan" loading="lazy" /></div>
+        <div class="team-avatar"><img src="team/mark-de-haan-aeret-1.webp" alt="Mark de Haan" loading="lazy" /></div>
         <p class="team-name">Mark de Haan</p>
         <p class="team-role">Geo-specialist</p>
       </div>
       <div class="team-card team-card--partner">
-        <div class="team-avatar"><img src="Hans_Godding.jpg" alt="Hans Godding" loading="lazy" /></div>
-        <p class="team-name">Hans Godding</p>
+        <div class="team-avatar"><img src="team/hans-godink.jpg" alt="Hans Godink" loading="lazy" /></div>
+        <p class="team-name">Hans Godink</p>
         <p class="team-role">Thermograaf level 3</p>
       </div>
     </div>
@@ -1531,7 +1525,7 @@
   <div class="container">
     <div class="foot-grid">
       <div>
-        <img src="LogoFloat1_512_512witrood.png" alt="Float 360" class="foot-logo" />
+        <img src="logofloat1-512-512-wit-rood.png" alt="Float 360" class="foot-logo" />
         <p style="max-width:380px">Content creatie &amp; data inzameling met drones, thermische camera's en 360° technologie. Gecertificeerd drone operator in de Specific Category.</p>
       </div>
     </div>
