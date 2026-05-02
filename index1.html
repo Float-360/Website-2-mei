@@ -1,0 +1,1949 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Float 360 — Content Creatie, Drone Operator & Data Inzameling</title>
+<meta name="description" content="Float 360 is een gecertificeerde drone operator en content creator. Wij leveren videoproducties, luchtfotografie, 360° VR tours, 3D modellen, thermische inspecties en meer." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
+<!-- Pannellum 360° panorama viewer -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css">
+<script defer src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
+<!-- Google reCAPTCHA v2 -->
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+<style>
+  :root{
+    --red:#E60026;
+    --red-dark:#B8001F;
+    --red-light:#FF1F3F;
+    --ink:#0B0B0E;
+    --ink-soft:#16161B;
+    --muted:#6B6F76;
+    --line:#E6E7EA;
+    --bg:#FFFFFF;
+    --bg-soft:#F6F7F9;
+    --shadow:0 10px 30px rgba(10,10,20,.08);
+    --shadow-lg:0 20px 60px rgba(10,10,20,.18);
+    --radius:14px;
+    --max:1200px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+    color:var(--ink);
+    background:var(--bg);
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit;text-decoration:none}
+  img{max-width:100%;display:block}
+  .container{max-width:var(--max);margin:0 auto;padding:0 24px}
+  h1,h2,h3,h4{font-family:'Montserrat',sans-serif;line-height:1.15;letter-spacing:-.01em}
+  h1{font-size:clamp(2.4rem,5.2vw,4.4rem);font-weight:900}
+  h2{font-size:clamp(1.8rem,3.4vw,2.8rem);font-weight:800}
+  h3{font-size:1.25rem;font-weight:700}
+  .accent{color:var(--red)}
+  .btn{
+    display:inline-flex;align-items:center;gap:.5rem;
+    padding:14px 26px;border-radius:999px;
+    font-weight:600;font-size:.95rem;
+    transition:transform .2s ease, box-shadow .2s ease, background .2s ease;
+    cursor:pointer;border:none;
+  }
+  .btn-primary{background:var(--red);color:#fff;box-shadow:0 8px 20px rgba(230,0,38,.35)}
+  .btn-primary:hover{background:var(--red-dark);transform:translateY(-2px);box-shadow:0 12px 26px rgba(230,0,38,.45)}
+  .btn-ghost{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.4)}
+  .btn-ghost:hover{background:rgba(255,255,255,.08);border-color:#fff}
+  .btn-dark{background:var(--ink);color:#fff}
+  .btn-dark:hover{background:#000;transform:translateY(-2px)}
+
+  /* NAV */
+  header.nav{
+    position:fixed;top:0;left:0;right:0;z-index:50;
+    backdrop-filter:saturate(180%) blur(14px);
+    background:rgba(11,11,14,.72);
+    border-bottom:1px solid rgba(255,255,255,.06);
+    transition:background .3s ease;
+  }
+  .nav-inner{
+    display:flex;align-items:center;justify-content:space-between;
+    height:72px;
+  }
+  .logo-wrap{display:flex;align-items:center;gap:10px}
+  .logo-wrap img{height:44px;width:auto;filter:drop-shadow(0 2px 6px rgba(0,0,0,.35))}
+  .nav-links{display:flex;gap:28px;align-items:center}
+  .nav-links a{
+    color:#E8E9EC;font-size:.92rem;font-weight:500;
+    transition:color .2s ease;
+  }
+  .nav-links a:hover{color:var(--red-light)}
+  .nav-cta{display:none}
+  @media(min-width:820px){.nav-cta{display:inline-flex}}
+  .burger{display:none;background:none;border:none;color:#fff;font-size:1.6rem;cursor:pointer}
+  @media(max-width:820px){
+    .nav-links{display:none}
+    .burger{display:block}
+    .nav-links.open{
+      display:flex;flex-direction:column;gap:0;
+      position:absolute;top:72px;left:0;right:0;
+      background:var(--ink);padding:10px 24px 22px;
+      border-bottom:1px solid rgba(255,255,255,.08);
+    }
+    .nav-links.open a{padding:14px 0;border-bottom:1px solid rgba(255,255,255,.06)}
+  }
+
+  /* HERO */
+  .hero{
+    position:relative;overflow:hidden;
+    min-height:100vh;
+    background:
+      radial-gradient(1200px 600px at 80% -10%, rgba(230,0,38,.35), transparent 60%),
+      radial-gradient(900px 500px at -10% 110%, rgba(230,0,38,.18), transparent 60%),
+      linear-gradient(160deg, #0B0B0E 0%, #1A0509 50%, #0B0B0E 100%);
+    color:#fff;
+    display:flex;align-items:center;
+    padding:120px 0 80px;
+  }
+  /* Video banner */
+  .hero-video{
+    position:absolute;inset:0;width:100%;height:100%;
+    overflow:hidden;z-index:0;
+    pointer-events:none;
+    opacity:1;
+  }
+  @media(max-width:768px){
+    .hero-video{display:none}
+  }
+  .hero-video-overlay{
+    position:absolute;inset:0;z-index:1;pointer-events:none;
+    background:
+      linear-gradient(180deg, rgba(11,11,14,.55) 0%, rgba(11,11,14,.35) 40%, rgba(11,11,14,.75) 100%),
+      radial-gradient(1200px 600px at 80% -10%, rgba(230,0,38,.28), transparent 60%);
+  }
+  .hero::before{
+    content:"";position:absolute;inset:0;z-index:1;
+    background-image:
+      linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px);
+    background-size:52px 52px;
+    mask-image:radial-gradient(ellipse at center, #000 30%, transparent 70%);
+    -webkit-mask-image:radial-gradient(ellipse at center, #000 30%, transparent 70%);
+    pointer-events:none;
+  }
+  .hero-grid{
+    position:relative;z-index:2;
+    display:grid;grid-template-columns:1fr;gap:50px;align-items:center;
+  }
+  @media(min-width:980px){.hero-grid{grid-template-columns:1.1fr .9fr}}
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:10px;
+    padding:6px 14px;border-radius:999px;
+    background:rgba(230,0,38,.12);color:var(--red-light);
+    border:1px solid rgba(230,0,38,.35);
+    font-size:.82rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;
+  }
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--red);box-shadow:0 0 12px var(--red)}
+  .hero h1{margin:22px 0 20px;color:#fff}
+  .hero h1 span{
+    background:linear-gradient(90deg,var(--red-light),var(--red));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .hero p.lede{
+    font-size:1.15rem;color:#CFD1D6;max-width:560px;margin-bottom:32px;
+  }
+  .hero-ctas{display:flex;gap:14px;flex-wrap:wrap}
+  .hero-stats{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:24px;
+    margin-top:48px;padding-top:32px;
+    border-top:1px solid rgba(255,255,255,.08);
+    max-width:520px;
+  }
+  .stat-num{font-family:'Montserrat';font-size:1.8rem;font-weight:900;color:#fff}
+  .stat-lbl{font-size:.8rem;color:#9CA0A8;text-transform:uppercase;letter-spacing:.08em}
+  .hero-visual{
+    position:relative;display:flex;align-items:center;justify-content:center;
+    min-height:420px;
+  }
+  .hero-logo{
+    max-width:520px;width:100%;
+    filter:drop-shadow(0 20px 50px rgba(230,0,38,.25));
+    animation:float 6s ease-in-out infinite;
+  }
+  @keyframes float{
+    0%,100%{transform:translateY(0) rotate(0deg)}
+    50%{transform:translateY(-16px) rotate(.5deg)}
+  }
+  .ring{
+    position:absolute;border-radius:50%;
+    border:1px dashed rgba(230,0,38,.35);
+    animation:spin 40s linear infinite;
+  }
+  .ring.r1{width:560px;height:560px}
+  .ring.r2{width:380px;height:380px;animation-duration:25s;animation-direction:reverse;border-color:rgba(255,255,255,.15)}
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  /* VIDEO GALLERY */
+  .svc-card--video.active{border-color:var(--red);box-shadow:0 0 0 2px rgba(230,0,38,.15)}
+  .svc-card--video.active::before{transform:scaleX(1)}
+  .svc-toggle-hint{
+    display:inline-block;margin-top:14px;
+    font-size:.82rem;font-weight:600;color:var(--red);
+    letter-spacing:.03em;transition:opacity .2s;
+  }
+  .vgrid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+    gap:22px;
+  }
+  .vcard{border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);transition:transform .3s ease, box-shadow .3s ease}
+  .vcard:hover{transform:translateY(-5px);box-shadow:var(--shadow-lg)}
+  .vthumb{
+    position:relative;cursor:pointer;
+    aspect-ratio:16/9;overflow:hidden;
+    background:#111;
+  }
+  .vthumb img{width:100%;height:100%;object-fit:cover;transition:transform .4s ease;display:block}
+  .vthumb:hover img{transform:scale(1.05)}
+  .vplay{
+    position:absolute;inset:0;
+    display:flex;align-items:center;justify-content:center;
+    background:rgba(0,0,0,.35);
+    transition:background .3s ease;
+  }
+  .vthumb:hover .vplay{background:rgba(230,0,38,.55)}
+  .vplay svg{width:56px;height:56px;color:#fff;filter:drop-shadow(0 2px 8px rgba(0,0,0,.5))}
+
+  /* VIDEO LIGHTBOX */
+  .vlightbox{
+    display:none;position:fixed;inset:0;z-index:200;
+    background:rgba(0,0,0,.92);
+    align-items:center;justify-content:center;
+  }
+  .vlightbox.open{display:flex}
+  .vlightbox-inner{
+    width:90vw;max-width:1000px;
+    aspect-ratio:16/9;
+    position:relative;
+  }
+  .vlightbox-inner iframe{width:100%;height:100%;border-radius:10px}
+  .vlightbox-close{
+    position:fixed;top:20px;right:28px;
+    background:none;border:none;color:#fff;
+    font-size:2.4rem;cursor:pointer;line-height:1;
+    opacity:.8;transition:opacity .2s;
+  }
+  .vlightbox-close:hover{opacity:1}
+
+  /* FOTO GALLERY (zelfde grid-stijl als video, andere thumb-aspect) */
+  .fgrid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+    gap:20px;
+  }
+  .fthumb{
+    position:relative;cursor:pointer;
+    aspect-ratio:4/3;overflow:hidden;
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    background:#111;
+    transition:transform .3s ease, box-shadow .3s ease;
+  }
+  .fthumb:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg)}
+  .fthumb img{width:100%;height:100%;object-fit:cover;transition:transform .5s ease;display:block}
+  .fthumb:hover img{transform:scale(1.06)}
+  .fthumb-overlay{
+    position:absolute;left:0;right:0;bottom:0;
+    padding:14px 16px 12px;
+    background:linear-gradient(to top, rgba(0,0,0,.78) 0%, rgba(0,0,0,0) 100%);
+    color:#fff;font-size:.92rem;font-weight:600;
+    transform:translateY(20%);opacity:0;transition:transform .3s ease, opacity .3s ease;
+  }
+  .fthumb:hover .fthumb-overlay{transform:translateY(0);opacity:1}
+  .fthumb-zoom{
+    position:absolute;top:12px;right:12px;
+    width:34px;height:34px;border-radius:50%;
+    background:rgba(0,0,0,.5);color:#fff;
+    display:flex;align-items:center;justify-content:center;
+    opacity:0;transition:opacity .25s ease, background .25s ease;
+  }
+  .fthumb:hover .fthumb-zoom{opacity:1}
+  .fthumb:hover .fthumb-zoom{background:rgba(230,0,38,.7)}
+
+  /* FOTO LIGHTBOX met prev/next + autoplay */
+  .flightbox{
+    display:none;position:fixed;inset:0;z-index:200;
+    background:rgba(0,0,0,.94);
+    align-items:center;justify-content:center;
+    padding:60px 20px;
+  }
+  .flightbox.open{display:flex}
+  .flightbox-inner{
+    position:relative;
+    width:100%;max-width:1280px;
+    height:100%;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+  }
+  .flightbox-img{
+    max-width:100%;max-height:calc(100vh - 200px);
+    object-fit:contain;border-radius:8px;
+    box-shadow:0 10px 40px rgba(0,0,0,.5);
+    user-select:none;
+  }
+  .flightbox-caption{
+    margin-top:16px;color:#fff;font-size:1rem;text-align:center;
+    max-width:80%;
+  }
+  .flightbox-counter{
+    color:rgba(255,255,255,.55);font-size:.85rem;
+    margin-top:6px;letter-spacing:.05em;
+  }
+  .flightbox-close{
+    position:fixed;top:20px;right:28px;
+    background:none;border:none;color:#fff;
+    font-size:2.4rem;cursor:pointer;line-height:1;
+    opacity:.8;transition:opacity .2s;z-index:2;
+  }
+  .flightbox-close:hover{opacity:1}
+  .flightbox-nav{
+    position:absolute;top:50%;transform:translateY(-50%);
+    width:54px;height:54px;border-radius:50%;
+    background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);
+    color:#fff;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    transition:background .25s ease, transform .25s ease;
+    z-index:2;
+  }
+  .flightbox-nav:hover{background:rgba(230,0,38,.7);transform:translateY(-50%) scale(1.07)}
+  .flightbox-prev{left:20px}
+  .flightbox-next{right:20px}
+  .flightbox-nav svg{width:24px;height:24px}
+  .flightbox-controls{
+    position:fixed;bottom:22px;left:50%;transform:translateX(-50%);
+    display:flex;gap:14px;align-items:center;z-index:2;
+  }
+  .flightbox-play{
+    background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);
+    color:#fff;cursor:pointer;
+    padding:8px 18px;border-radius:30px;font-size:.85rem;
+    display:inline-flex;align-items:center;gap:8px;
+    transition:background .25s ease;
+  }
+  .flightbox-play:hover{background:rgba(230,0,38,.7)}
+  .flightbox-play svg{width:14px;height:14px}
+  @media (max-width:680px){
+    .flightbox-nav{width:44px;height:44px}
+    .flightbox-prev{left:8px}
+    .flightbox-next{right:8px}
+    .flightbox-img{max-height:calc(100vh - 230px)}
+  }
+
+
+  /* TEAM */
+  .team-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+    gap:22px;
+    max-width:1100px;
+    margin:0 auto;
+  }
+  .team-card{
+    background:var(--bg);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:32px 22px 26px;
+    text-align:center;
+    transition:transform .3s ease, box-shadow .3s ease, border-color .3s ease;
+  }
+  .team-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg);border-color:rgba(230,0,38,.25)}
+  .team-avatar{
+    width:96px;height:96px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    margin:0 auto 18px;
+    background:linear-gradient(135deg, var(--red), #ff5278);
+    color:#fff;font-weight:700;font-size:1.55rem;letter-spacing:.04em;
+    box-shadow:0 8px 24px rgba(230,0,38,.25);
+    overflow:hidden;
+  }
+  .team-avatar img{width:100%;height:100%;object-fit:cover}
+  .team-name{font-weight:700;font-size:1.08rem;margin:0 0 6px;color:var(--ink)}
+  .team-role{font-size:.92rem;color:var(--muted);margin:0;line-height:1.45}
+  .team-subhead{
+    text-align:center;margin:60px 0 28px;
+    font-size:.78rem;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);
+    font-weight:600;display:flex;align-items:center;justify-content:center;gap:14px;
+  }
+  .team-subhead::before, .team-subhead::after{
+    content:'';flex:0 1 80px;height:1px;background:var(--line);
+  }
+  .team-card--partner .team-avatar{
+    background:linear-gradient(135deg, #2a2a2a, #555);
+    box-shadow:0 8px 24px rgba(10,10,20,.18);
+  }
+
+  section{padding:110px 0;position:relative}
+  .section-head{text-align:center;max-width:760px;margin:0 auto 64px}
+  .section-head .eyebrow{background:rgba(230,0,38,.08);color:var(--red);border-color:rgba(230,0,38,.2)}
+  .section-head h2{margin:18px 0 14px}
+  .section-head p{color:var(--muted);font-size:1.08rem}
+
+  /* SERVICES */
+  #diensten{background:var(--bg-soft)}
+  .svc-grid{
+    display:grid;gap:24px;
+    grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  }
+  .svc-card{
+    background:#fff;border-radius:var(--radius);
+    padding:32px 28px;border:1px solid var(--line);
+    transition:transform .3s ease, box-shadow .3s ease, border-color .3s ease;
+    position:relative;overflow:hidden;
+  }
+  .svc-card::before{
+    content:"";position:absolute;top:0;left:0;right:0;height:3px;
+    background:linear-gradient(90deg,var(--red),var(--red-light));
+    transform:scaleX(0);transform-origin:left;transition:transform .4s ease;
+  }
+  .svc-card:hover{transform:translateY(-6px);box-shadow:var(--shadow-lg);border-color:transparent}
+  .svc-card:hover::before{transform:scaleX(1)}
+  .svc-icon{
+    width:54px;height:54px;border-radius:12px;
+    background:linear-gradient(135deg,rgba(230,0,38,.08),rgba(230,0,38,.02));
+    color:var(--red);
+    display:flex;align-items:center;justify-content:center;
+    margin-bottom:20px;
+    font-size:1.6rem;
+  }
+  .svc-card h3{margin-bottom:10px}
+  .svc-card p{color:var(--muted);font-size:.95rem}
+  /* Auto-loop video / foto bovenin een service-tegel — wrapper enforces 16:9, inner element vult het */
+  .svc-media{
+    width:calc(100% + 56px);   /* Strekt over de horizontale padding van .svc-card (28px L+R) */
+    margin:-32px -28px 22px;   /* Negatieve marge naar de rand van de tegel */
+    aspect-ratio:16/9;
+    overflow:hidden;
+    background:#0B0B0E;
+    display:block;
+  }
+  .svc-video-loop{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+  }
+  /* Variant voor logo's — niet bijsnijden, witte achtergrond, padding eromheen */
+  .svc-media--logo{background:#fff;padding:18px}
+  .svc-media--logo .svc-video-loop{object-fit:contain}
+  .svc-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+  .svc-link{
+    display:inline-flex;align-items:center;gap:6px;
+    padding:8px 14px;border-radius:999px;
+    background:rgba(230,0,38,.08);color:var(--red);
+    font-size:.85rem;font-weight:600;
+    border:1px solid rgba(230,0,38,.2);
+    transition:background .2s ease, color .2s ease, transform .2s ease;
+    cursor:pointer;
+  }
+  .svc-link:hover{background:var(--red);color:#fff;transform:translateY(-1px)}
+  .svc-link svg{width:14px;height:14px}
+
+  /* PANORAMA LIGHTBOX */
+  .panolightbox{
+    display:none;position:fixed;inset:0;z-index:200;
+    background:rgba(0,0,0,.95);
+    align-items:center;justify-content:center;
+  }
+  .panolightbox.open{display:flex}
+  .panolightbox-inner{
+    width:92vw;max-width:1200px;
+    height:85vh;max-height:820px;
+    position:relative;
+    border-radius:12px;overflow:hidden;
+    box-shadow:0 20px 60px rgba(0,0,0,.6);
+  }
+  #panoViewer{width:100%;height:100%;background:#000}
+  .panolightbox-caption{
+    position:absolute;left:0;right:0;bottom:0;
+    padding:14px 22px;
+    background:linear-gradient(0deg,rgba(0,0,0,.75),transparent);
+    color:#fff;font-size:.95rem;
+    pointer-events:none;
+  }
+
+  /* ABOUT */
+  #over-ons .wrap{
+    display:grid;grid-template-columns:1fr;gap:50px;align-items:center;
+  }
+  @media(min-width:900px){#over-ons .wrap{grid-template-columns:1fr 1fr}}
+  .about-visual{
+    background:
+      radial-gradient(circle at 30% 30%, rgba(230,0,38,.2), transparent 55%),
+      linear-gradient(135deg,#0B0B0E 0%,#1A0509 100%);
+    border-radius:var(--radius);
+    padding:60px 40px;color:#fff;min-height:380px;
+    position:relative;overflow:hidden;
+    display:flex;flex-direction:column;justify-content:center;
+  }
+  .about-visual::after{
+    content:"";position:absolute;bottom:-60px;right:-60px;
+    width:240px;height:240px;border-radius:50%;
+    border:1px dashed rgba(255,255,255,.15);
+  }
+  .badge-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+  .badge{
+    background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);
+    padding:8px 14px;border-radius:999px;font-size:.82rem;color:#EDEEF0;
+  }
+  .about-visual h3{font-size:1.7rem;margin-bottom:10px}
+  .about-visual p{color:#CFD1D6}
+  .about-copy h2{margin-bottom:20px}
+  .about-copy p{color:var(--muted);margin-bottom:16px}
+  .check-list{list-style:none;margin-top:24px;display:grid;gap:12px}
+  .check-list li{display:flex;gap:12px;align-items:flex-start;color:var(--ink)}
+  .check{
+    flex:0 0 24px;width:24px;height:24px;border-radius:50%;
+    background:var(--red);color:#fff;display:grid;place-items:center;
+    font-size:.8rem;margin-top:3px;
+  }
+
+  /* PORTFOLIO */
+  #portfolio{background:var(--bg-soft)}
+  .folio-grid{
+    display:grid;gap:22px;
+    grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  }
+  .folio-card{
+    position:relative;border-radius:var(--radius);overflow:hidden;
+    min-height:280px;
+    background:#222;color:#fff;cursor:pointer;
+    transition:transform .4s ease;
+    box-shadow:var(--shadow);
+  }
+  .folio-card:hover{transform:translateY(-6px)}
+  .folio-bg{
+    position:absolute;inset:0;
+    background-size:cover;background-position:center;
+    transition:transform .6s ease;
+  }
+  .folio-card:hover .folio-bg{transform:scale(1.08)}
+  .folio-overlay{
+    position:absolute;inset:0;
+    background:linear-gradient(180deg, rgba(11,11,14,.1) 0%, rgba(11,11,14,.85) 100%);
+  }
+  .folio-content{
+    position:absolute;left:0;right:0;bottom:0;padding:26px 24px;z-index:1;
+  }
+  .folio-tag{
+    display:inline-block;background:var(--red);color:#fff;
+    font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+    padding:4px 10px;border-radius:4px;margin-bottom:10px;
+  }
+  .folio-content h3{font-size:1.15rem;margin-bottom:6px}
+  .folio-content p{font-size:.88rem;color:rgba(255,255,255,.82)}
+  .folio-watch{
+    display:inline-block;margin-top:12px;
+    font-size:.85rem;font-weight:600;letter-spacing:.03em;
+    color:#fff;background:rgba(230,0,38,.85);
+    padding:6px 14px;border-radius:999px;
+    transition:background .25s ease, transform .25s ease;
+  }
+  .folio-card:hover .folio-watch{background:var(--red);transform:translateX(2px)}
+
+  /* Folio met crossfading achtergrond — 2 afbeeldingen wisselen automatisch af */
+  .folio-bg-cycle{position:absolute;inset:0;overflow:hidden}
+  .folio-bg-cycle .cycle-img{
+    position:absolute;inset:0;background-size:cover;background-position:center;
+    opacity:0;transition:transform .6s ease;
+    animation:folioFade 10s infinite;
+  }
+  .folio-bg-cycle .cycle-img:nth-child(1){animation-delay:0s}
+  .folio-bg-cycle .cycle-img:nth-child(2){animation-delay:5s}
+  @keyframes folioFade{
+    0%, 40%  {opacity:1}
+    50%, 90% {opacity:0}
+    100%     {opacity:1}
+  }
+  .folio-card:hover .folio-bg-cycle .cycle-img{transform:scale(1.06)}
+
+  /* Twee knoppen-rij in een folio-tegel */
+  .folio-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+  .folio-actions .folio-watch{margin-top:0;cursor:pointer;border:none;font-family:inherit}
+  .folio-actions .folio-watch:hover{background:var(--red);transform:translateX(2px)}
+
+  .folio-1 .folio-bg{background-image:url('iemenschoer-haaksbergen-thuisgenoten.jpg')}
+  .folio-2 .folio-bg{background-image:url('asml-inspectie-1.jpg')}
+  .folio-3 .folio-bg{background-image:url('wbf-20240215-2345-dxo-verbeterd-sr-2v1.jpg')}
+  .folio-4 .folio-bg{background-image:linear-gradient(135deg,#2a2a40,#0e0e1a),url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400" viewBox="0 0 600 400"><rect fill="%23181828" width="600" height="400"/><g stroke="%234a4a80" stroke-width="1" fill="none" opacity=".6"><path d="M100 300 L200 200 L300 280 L400 180 L500 240"/><path d="M80 350 L180 250 L280 320 L380 220 L480 290"/></g><g fill="%23e60026" opacity=".8"><circle cx="200" cy="200" r="4"/><circle cx="300" cy="280" r="4"/><circle cx="400" cy="180" r="4"/></g></svg>')}
+  .folio-5 .folio-bg{background-image:linear-gradient(135deg,#3a2a1a,#1a1208),url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400" viewBox="0 0 600 400"><rect fill="%23402818" width="600" height="400"/><rect x="80" y="180" width="90" height="160" fill="%23604028"/><rect x="200" y="150" width="110" height="190" fill="%23503520"/><rect x="340" y="170" width="100" height="170" fill="%23604028"/><rect x="470" y="200" width="90" height="140" fill="%23503520"/></svg>')}
+  .folio-6 .folio-bg{background-image:linear-gradient(135deg,#1a2a3a,#060a18),url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400" viewBox="0 0 600 400"><rect fill="%23081428" width="600" height="400"/><g fill="%23ffffff" opacity=".15"><circle cx="100" cy="100" r="2"/><circle cx="200" cy="150" r="2"/><circle cx="350" cy="80" r="2"/><circle cx="500" cy="140" r="2"/></g><g fill="%23ff4020" opacity=".8"><ellipse cx="200" cy="300" rx="30" ry="15"/><ellipse cx="400" cy="280" rx="25" ry="12"/></g></svg>')}
+
+  /* CLIENTS */
+  #klanten{background:#fff;padding:100px 0 110px}
+  .clients-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(170px,1fr));
+    gap:14px;
+    margin-bottom:36px;
+  }
+  .client-tile{
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:18px 16px;
+    text-align:center;
+    font-weight:600;
+    font-size:.9rem;
+    color:var(--ink);
+    letter-spacing:-.005em;
+    transition:transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s ease, border-color .35s ease, background .35s ease;
+    position:relative;
+    min-height:96px;
+    display:flex;align-items:center;justify-content:center;
+    z-index:1;
+  }
+  .client-tile img{
+    max-width:100%;
+    max-height:58px;
+    width:auto;height:auto;
+    object-fit:contain;
+    filter:grayscale(100%);
+    opacity:.72;
+    transition:filter .3s ease, opacity .3s ease, transform .3s ease;
+  }
+  .client-tile:hover img{
+    filter:grayscale(0%);
+    opacity:1;
+  }
+  .client-tile::after{
+    content:"";position:absolute;left:0;top:0;bottom:0;width:3px;
+    background:var(--red);transform:scaleY(0);transform-origin:bottom;
+    transition:transform .3s ease;
+  }
+  .client-tile:hover{
+    transform:scale(1.9);
+    z-index:20;
+    box-shadow:0 24px 50px rgba(10,10,20,.28);
+    border-color:var(--red);
+    background:#fff;
+  }
+  .client-tile:hover::after{transform:scaleY(1);transform-origin:top}
+  .clients-note{
+    text-align:center;color:var(--muted);font-size:.95rem;
+    padding-top:20px;border-top:1px solid var(--line);
+  }
+  .clients-note strong{color:var(--red);font-weight:700}
+
+  /* CONTACT */
+  #contact{background:var(--ink);color:#fff}
+  #contact .section-head h2{color:#fff}
+  #contact .section-head p{color:#9CA0A8}
+  #contact .section-head .eyebrow{background:rgba(230,0,38,.15);color:var(--red-light);border-color:rgba(230,0,38,.35)}
+  .contact-wrap{
+    display:grid;gap:40px;
+    grid-template-columns:1fr;
+    align-items:start;
+  }
+  @media(min-width:900px){.contact-wrap{grid-template-columns:.9fr 1.1fr}}
+  .contact-info h3{color:#fff;margin-bottom:18px;font-size:1.4rem}
+  .contact-info p{color:#B8BCC4;margin-bottom:26px}
+  .contact-list{list-style:none;display:grid;gap:18px}
+  .contact-list li{display:flex;gap:14px;align-items:center;color:#EDEEF0}
+  .contact-ico{
+    width:42px;height:42px;border-radius:10px;
+    background:rgba(230,0,38,.15);color:var(--red-light);
+    display:grid;place-items:center;flex:0 0 42px;
+  }
+  .contact-list a:hover{color:var(--red-light)}
+  form.contact-form{
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:var(--radius);
+    padding:32px;
+    display:grid;gap:16px;
+  }
+  .form-row{display:grid;gap:16px;grid-template-columns:1fr}
+  @media(min-width:560px){.form-row{grid-template-columns:1fr 1fr}}
+  label{font-size:.85rem;color:#CFD1D6;font-weight:500;display:block;margin-bottom:6px}
+  input, select, textarea{
+    width:100%;padding:14px 16px;
+    background:rgba(255,255,255,.06);
+    border:1px solid rgba(255,255,255,.1);
+    border-radius:10px;
+    color:#fff;font-family:inherit;font-size:.95rem;
+    transition:border-color .2s ease, background .2s ease;
+  }
+  input:focus, select:focus, textarea:focus{
+    outline:none;border-color:var(--red);background:rgba(255,255,255,.08);
+  }
+  textarea{resize:vertical;min-height:130px}
+  .form-note{font-size:.82rem;color:#9CA0A8}
+
+  /* FOOTER */
+  footer.site{
+    background:#050506;color:#9CA0A8;
+    padding:50px 0 30px;
+    border-top:1px solid rgba(255,255,255,.06);
+  }
+  .foot-grid{
+    display:grid;gap:30px;
+    grid-template-columns:1fr;
+    padding-bottom:36px;
+    border-bottom:1px solid rgba(255,255,255,.06);
+  }
+  @media(min-width:720px){.foot-grid{grid-template-columns:2fr 1fr 1fr}}
+  .foot-grid h4{color:#fff;font-size:1rem;margin-bottom:16px;font-family:'Inter';font-weight:700}
+  .foot-grid ul{list-style:none;display:grid;gap:10px}
+  .foot-grid a{color:#9CA0A8;font-size:.92rem}
+  .foot-grid a:hover{color:var(--red-light)}
+  .foot-logo{height:54px;width:auto;margin-bottom:16px}
+  .foot-bottom{
+    padding-top:24px;
+    display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;
+    font-size:.85rem;
+  }
+
+  /* LIGHTBOX */
+  .lightbox{
+    position:fixed;inset:0;z-index:1000;
+    background:rgba(5,5,8,.94);
+    display:none;
+    align-items:center;justify-content:center;
+    padding:40px 24px 80px;
+    backdrop-filter:blur(8px);
+    -webkit-backdrop-filter:blur(8px);
+    cursor:zoom-out;
+  }
+  .lightbox.open{display:flex;animation:fadeIn .25s ease}
+  .lightbox img{
+    max-width:100%;max-height:100%;
+    border-radius:10px;
+    box-shadow:0 30px 70px rgba(0,0,0,.7);
+    animation:zoomIn .35s cubic-bezier(.2,.8,.2,1);
+    cursor:default;
+  }
+  .lightbox-close{
+    position:absolute;top:20px;right:24px;
+    width:46px;height:46px;border-radius:50%;
+    background:rgba(255,255,255,.12);
+    color:#fff;border:1px solid rgba(255,255,255,.2);
+    cursor:pointer;font-size:1.6rem;line-height:1;
+    display:grid;place-items:center;
+    transition:background .2s ease, transform .2s ease;
+  }
+  .lightbox-close:hover{background:var(--red);border-color:var(--red);transform:rotate(90deg)}
+  .lightbox-caption{
+    position:absolute;bottom:24px;left:50%;transform:translateX(-50%);
+    color:#fff;font-size:.95rem;font-weight:500;
+    background:rgba(0,0,0,.55);padding:10px 20px;border-radius:999px;
+    max-width:90%;text-align:center;
+    border:1px solid rgba(255,255,255,.12);
+  }
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  @keyframes zoomIn{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:none}}
+
+  /* REVEAL ANIMATION */
+  .reveal{opacity:0;transform:translateY(24px);transition:opacity .7s ease, transform .7s ease}
+  .reveal.visible{opacity:1;transform:none}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<header class="nav">
+  <div class="container nav-inner">
+    <a href="#home" class="logo-wrap" aria-label="Float 360">
+      <img src="logofloat1-512-512-wit-rood.png" alt="Float 360 logo" />
+    </a>
+    <nav class="nav-links" id="navLinks">
+      <a href="#diensten">Diensten</a>
+      <a href="#over-ons">Over ons</a>
+      <a href="#team">Team</a>
+      <a href="#portfolio">Portfolio</a>
+      <a href="#klanten">Klanten</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <a href="#contact" class="btn btn-primary nav-cta">Offerte aanvragen</a>
+    <button class="burger" aria-label="Menu" onclick="document.getElementById('navLinks').classList.toggle('open')">&#9776;</button>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-video" id="heroBannerVideo" aria-hidden="true">
+    <iframe
+      src="https://player.vimeo.com/video/1188596377?autoplay=1&loop=1&muted=1&background=1&controls=0&dnt=1"
+      frameborder="0"
+      allow="autoplay; fullscreen"
+      allowfullscreen
+      style="position:absolute;top:50%;left:50%;width:177.78vh;min-width:100%;min-height:56.25vw;height:56.25vw;transform:translate(-50%,-50%);pointer-events:none;border:none;"
+    ></iframe>
+  </div>
+  <div class="hero-video-overlay"></div>
+  <div class="container hero-grid">
+    <div>
+      <span class="eyebrow"><span class="dot"></span> Gecertificeerde Drone Operator — Specific Category</span>
+      <h1>Content creatie &amp; data inzameling <span>vanuit een ander perspectief.</span></h1>
+      <p class="lede">
+        Van bedrijfsvideo's en 360° VR tours tot 3D modellen en thermische inspecties —
+        Float 360 brengt uw project in beeld met professionele camera's, slimme sensoren en de scherpste blik uit de lucht.
+      </p>
+      <div class="hero-ctas">
+        <a href="#contact" class="btn btn-primary">Start uw project</a>
+        <a href="#diensten" class="btn btn-ghost">Bekijk diensten</a>
+      </div>
+      <div class="hero-stats">
+        <div>
+          <div class="stat-num">10+</div>
+          <div class="stat-lbl">Diensten</div>
+        </div>
+        <div>
+          <div class="stat-num">360°</div>
+          <div class="stat-lbl">VR Tours</div>
+        </div>
+        <div>
+          <div class="stat-num">24/7</div>
+          <div class="stat-lbl">Inzetbaar</div>
+        </div>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="ring r1"></div>
+      <div class="ring r2"></div>
+      <img src="logofloat1-512-512-wit-rood.png" alt="Float 360" class="hero-logo" />
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section id="diensten">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">Onze diensten</span>
+      <h2>Eén partner voor <span class="accent">beeld, data en inspectie</span></h2>
+      <p>Wij combineren vakmanschap met de nieuwste drone- en cameratechniek. Ontdek hieronder waar Float 360 uw organisatie mee kan ondersteunen.</p>
+    </div>
+
+    <div class="svc-grid">
+
+      <div class="svc-card reveal svc-card--video" id="svcVideoCard" onclick="toggleVideoGallery()" style="cursor:pointer" title="Klik om voorbeeldvideo's te bekijken">
+        <div class="svc-media">
+          <video class="svc-video-loop" autoplay muted loop playsinline preload="metadata" aria-label="Voorbeeld videoproducties">
+            <source src="showreel-web/videoproducties-montage.mp4" type="video/mp4" />
+          </video>
+        </div>
+        <div class="svc-icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+        </div>
+        <h3>Videoproducties</h3>
+        <p>Bedrijfsvideo's, trainings- en informatiefilms, documentaires en promotievideo's — van concept tot eindmontage.</p>
+        <span class="svc-toggle-hint" id="svcToggleHint">▶ Bekijk voorbeelden</span>
+      </div>
+
+      <div class="svc-card reveal svc-card--video" id="svcFotoCard" onclick="toggleFotoGallery()" style="cursor:pointer" title="Klik om voorbeeldfoto's te bekijken">
+        <div class="svc-media">
+          <video class="svc-video-loop" autoplay muted loop playsinline preload="metadata" aria-label="Voorbeeld fotografie slideshow">
+            <source src="showreel-web/fotografie-slideshow.mp4" type="video/mp4" />
+          </video>
+        </div>
+        <div class="svc-icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        </div>
+        <h3>Fotografie</h3>
+        <p>Hoogwaardige fotografie vanaf de grond én vanuit de lucht. Perfect voor marketing, vastgoed, evenementen en documentatie.</p>
+        <span class="svc-toggle-hint" id="svcFotoToggleHint">▶ Bekijk voorbeelden</span>
+      </div>
+
+      <div class="svc-card reveal">
+        <div class="svc-media">
+          <video class="svc-video-loop" autoplay muted loop playsinline preload="metadata" aria-label="Voorbeeld 360 panorama rondedraai">
+            <source src="showreel-web/panorama-360.mp4" type="video/mp4" />
+          </video>
+        </div>
+        <div class="svc-icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        </div>
+        <h3>360° Panorama &amp; VR Tours</h3>
+        <p>Interactieve virtual reality tours met hotspots, video's, PDF's en slideshows — ideaal voor woonzorghuizen, scholen en vastgoed.</p>
+        <div class="svc-actions">
+          <a href="https://www.thuisgenoten.nl/vr/slangenbeek/" target="_blank" rel="noopener" class="svc-link" aria-label="Bekijk VR tour Slangenbeek">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 18 0 9 9 0 1 0-18 0"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>
+            Bekijk VR tour
+          </a>
+          <button type="button" class="svc-link" onclick="openPanorama('panoramas/Bellavistastraat%20Almelo%20kl.jpg','Bellavistastraat — Almelo')" aria-label="Bekijk 360° panorama Bellavistastraat Almelo">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12c2.5 3 6 5 9 5s6.5-2 9-5M3 12c2.5-3 6-5 9-5s6.5 2 9 5"/></svg>
+            Bekijk 360° panorama
+          </button>
+        </div>
+      </div>
+
+      <div class="svc-card reveal">
+        <div class="svc-media">
+          <video class="svc-video-loop" autoplay muted loop playsinline preload="metadata" aria-label="Voorbeeld 3D model en orthofoto">
+            <source src="showreel-web/float360-ortho-en-3d-model.mp4" type="video/mp4" />
+          </video>
+        </div>
+        <div class="svc-icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+        </div>
+        <h3>3D Modellen &amp; Fotogrammetrie</h3>
+        <p>Nauwkeurige 3D modellen van gebouwen, bruggen, windmolens en kunstwerken voor inspectie en metingen (lengte, oppervlakte, volume).</p>
+      </div>
+
+      <div class="svc-card reveal">
+        <div class="svc-media">
+          <img class="svc-video-loop" src="asml-inspectie-1.jpg" alt="Thermografische inspectie van industriële installatie" loading="lazy" />
+        </div>
+        <div class="svc-icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg>
+        </div>
+        <h3>Thermische Inspecties</h3>
+        <p>Opsporen van warmtelekkages, elektrische storingen en isolatieproblemen in woningen én industrie met hoogwaardige thermische camera's.</p>
+      </div>
+
+      <div class="svc-card reveal">
+        <div class="svc-media">
+          <video class="svc-video-loop" autoplay muted loop playsinline preload="metadata" aria-label="3D model woning voor NEN 2767 inspectie">
+            <source src="showreel-web/nen2767-woning.mp4" type="video/mp4" />
+          </video>
+        </div>
+        <div class="svc-icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/><circle cx="12" cy="10" r="3"/></svg>
+        </div>
+        <h3>Inspecties NEN 2767</h3>
+        <p>3D modellen van woningen en industriële objecten voor meerjaren­onderhouds­plannen conform NEN 2767 — ideaal voor woningcorporaties.</p>
+      </div>
+
+      <div class="svc-card reveal">
+        <div class="svc-media">
+          <video class="svc-video-loop" autoplay muted loop playsinline preload="metadata" aria-label="Slideshow bruginspecties">
+            <source src="showreel-web/bruginspecties-slideshow.mp4" type="video/mp4" />
+          </video>
+        </div>
+        <div class="svc-icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.91 8.84L8.56 21.19a4.94 4.94 0 0 1-3.49 1.44 4.94 4.94 0 0 1-3.49-1.44 4.94 4.94 0 0 1 0-6.98L13.92 1.82a3.29 3.29 0 0 1 2.33-.96 3.29 3.29 0 0 1 2.33.96 3.29 3.29 0 0 1 0 4.66L6.4 18.63a1.65 1.65 0 0 1-1.16.48 1.65 1.65 0 0 1-1.17-.48 1.65 1.65 0 0 1 0-2.33l10.59-10.58"/></svg>
+        </div>
+        <h3>Bruginspecties</h3>
+        <p>Visuele inspecties van bruggen en kunstwerken — snel, veilig en efficiënt. Geen steigers, geen verkeersstops.</p>
+      </div>
+
+      <div class="svc-card reveal">
+        <div class="svc-media">
+          <video class="svc-video-loop" autoplay muted loop playsinline preload="metadata" aria-label="Slideshow volumemetingen">
+            <source src="showreel-web/volumemetingen-slideshow.mp4" type="video/mp4" />
+          </video>
+        </div>
+        <div class="svc-icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v6m0 10v6m11-11h-6M7 12H1m17.5-7.5l-4 4m-7 7l-4 4m0-15l4 4m7 7l4 4"/></svg>
+        </div>
+        <h3>Volumemetingen</h3>
+        <p>Exact volume bepalen bij afvalverwerkers, grondbanken en bouwprojecten op basis van fotogrammetrische 3D modellen.</p>
+      </div>
+
+      <div class="svc-card reveal" style="cursor:pointer" onclick="openVideo(this,'gIztOjM3aNo')" title="Bekijk de TV Oost-reportage">
+        <div class="svc-media">
+          <video class="svc-video-loop" autoplay muted loop playsinline preload="metadata" aria-label="Slideshow Drone Beveiliging Events">
+            <source src="showreel-web/beveiliging-slideshow-v2.mp4" type="video/mp4" />
+          </video>
+        </div>
+        <div class="svc-icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><line x1="21.17" y1="8" x2="12" y2="8"/><line x1="3.95" y1="6.06" x2="8.54" y2="14"/><line x1="10.88" y1="21.94" x2="15.46" y2="14"/></svg>
+        </div>
+        <h3>Drone Beveiliging &amp; Events</h3>
+        <p>Ogen in de lucht voor politie en beveiliging bij evenementen. Ook nachtvluchten met thermische camera's voor publieksstroom.</p>
+        <span class="svc-toggle-hint">▶ Bekijk TV Oost reportage</span>
+      </div>
+
+      <div class="svc-card reveal">
+        <div class="svc-media">
+          <video class="svc-video-loop" autoplay muted loop playsinline preload="metadata" aria-label="Slideshow Search and Rescue thermisch zoeken">
+            <source src="showreel-web/searchrescue-slideshow.mp4" type="video/mp4" />
+          </video>
+        </div>
+        <div class="svc-icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+        </div>
+        <h3>Search &amp; Rescue</h3>
+        <p>Opsporen van vermiste huisdieren, vee en wild. Lokaliseren van Aziatische hoornaar-nesten en weidevogel­nesten met thermische camera.</p>
+      </div>
+
+      <div class="svc-card reveal" style="cursor:pointer" onclick="window.open('https://www.wouterborre.nl/bekijk-mijn-bouw-demo','_blank','noopener')" title="Bekijk de demo">
+        <div class="svc-media">
+          <img class="svc-video-loop" src="bannerkijkmijnnieuwbouw.jpg" alt="Banner Bekijk mijn Nieuwbouw" loading="lazy" />
+        </div>
+        <div class="svc-icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        </div>
+        <h3>Bekijk mijn Nieuwbouw™</h3>
+        <p>Uniek concept voor projectontwikkelaars: volg een bouwproject via video, 3D model, 360° panorama, orthofoto en reguliere foto's.</p>
+        <span class="svc-toggle-hint">Bekijk demo &rarr;</span>
+      </div>
+
+      <div class="svc-card reveal" style="cursor:pointer" onclick="window.open('https://vtwbf.nl/vt/regiokompasv2/index.htm','_blank','noopener')" title="Bekijk de demo van Regio Kompas">
+        <div class="svc-media svc-media--logo">
+          <img class="svc-video-loop" src="logo-regiokompas-almelo.png" alt="Regio Kompas logo" loading="lazy" />
+        </div>
+        <div class="svc-icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+        </div>
+        <h3>Regio Kompas™</h3>
+        <p>Digitaal platform met interactieve 360° luchtfoto's van uw stad. Perfect voor gemeenten, horeca, musea en lokale bedrijven.</p>
+        <span class="svc-toggle-hint">Bekijk demo &rarr;</span>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- VIDEO GALLERY -->
+<div id="video-gallery" style="max-height:0;overflow:hidden;transition:max-height .6s cubic-bezier(.4,0,.2,1), opacity .4s ease;opacity:0;background:#fff">
+  <section style="padding:80px 0 110px">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">Ons werk in beeld</span>
+      <h2>Videoproducties <span class="accent">bekijken</span></h2>
+      <p>Een selectie van onze videoproducties — van luchtopnames en bedrijfsfilms tot projectregistraties en documentaires.</p>
+    </div>
+    <div class="vgrid reveal">
+
+      <div class="vcard">
+        <div class="vthumb" onclick="openVideo(this,'AaS9l4GOq80')">
+          <img src="https://img.youtube.com/vi/AaS9l4GOq80/maxresdefault.jpg" alt="Video 1" loading="lazy" onerror="this.src='https://img.youtube.com/vi/AaS9l4GOq80/hqdefault.jpg'" />
+          <div class="vplay"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>
+        </div>
+      </div>
+
+      <div class="vcard">
+        <div class="vthumb" onclick="openVideo(this,'undwdFGiX0Q')">
+          <img src="https://img.youtube.com/vi/undwdFGiX0Q/maxresdefault.jpg" alt="Video 2" loading="lazy" onerror="this.src='https://img.youtube.com/vi/undwdFGiX0Q/hqdefault.jpg'" />
+          <div class="vplay"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>
+        </div>
+      </div>
+
+      <div class="vcard">
+        <div class="vthumb" onclick="openVideo(this,'IAi-RPHxHek')">
+          <img src="https://img.youtube.com/vi/IAi-RPHxHek/maxresdefault.jpg" alt="Video 3" loading="lazy" onerror="this.src='https://img.youtube.com/vi/IAi-RPHxHek/hqdefault.jpg'" />
+          <div class="vplay"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>
+        </div>
+      </div>
+
+      <div class="vcard">
+        <div class="vthumb" onclick="openVideo(this,'VJX1wqdsca0')">
+          <img src="https://img.youtube.com/vi/VJX1wqdsca0/maxresdefault.jpg" alt="Video 4" loading="lazy" onerror="this.src='https://img.youtube.com/vi/VJX1wqdsca0/hqdefault.jpg'" />
+          <div class="vplay"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>
+        </div>
+      </div>
+
+      <div class="vcard">
+        <div class="vthumb" onclick="openVideo(this,'9Tv9omKTN2g')">
+          <img src="https://img.youtube.com/vi/9Tv9omKTN2g/maxresdefault.jpg" alt="Video 5" loading="lazy" onerror="this.src='https://img.youtube.com/vi/9Tv9omKTN2g/hqdefault.jpg'" />
+          <div class="vplay"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>
+        </div>
+      </div>
+
+      <div class="vcard">
+        <div class="vthumb" onclick="openVideo(this,'jGCm_iPxOR0')">
+          <img src="https://img.youtube.com/vi/jGCm_iPxOR0/maxresdefault.jpg" alt="Video 6" loading="lazy" onerror="this.src='https://img.youtube.com/vi/jGCm_iPxOR0/hqdefault.jpg'" />
+          <div class="vplay"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>
+        </div>
+      </div>
+
+      <div class="vcard">
+        <div class="vthumb" onclick="openVideo(this,'hCY80kPKkE4')">
+          <img src="https://img.youtube.com/vi/hCY80kPKkE4/maxresdefault.jpg" alt="Video 7" loading="lazy" onerror="this.src='https://img.youtube.com/vi/hCY80kPKkE4/hqdefault.jpg'" />
+          <div class="vplay"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>
+        </div>
+      </div>
+
+      <div class="vcard">
+        <div class="vthumb" onclick="openVideo(this,'s031cqTW6PE')">
+          <img src="https://img.youtube.com/vi/s031cqTW6PE/maxresdefault.jpg" alt="Video 8" loading="lazy" onerror="this.src='https://img.youtube.com/vi/s031cqTW6PE/hqdefault.jpg'" />
+          <div class="vplay"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>
+        </div>
+      </div>
+
+      <div class="vcard">
+        <div class="vthumb" onclick="openVideo(this,'UgNL2o_J1h8')">
+          <img src="https://img.youtube.com/vi/UgNL2o_J1h8/maxresdefault.jpg" alt="Video 9" loading="lazy" onerror="this.src='https://img.youtube.com/vi/UgNL2o_J1h8/hqdefault.jpg'" />
+          <div class="vplay"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  </section>
+</div>
+
+<!-- FOTO GALLERY -->
+<div id="foto-gallery" style="max-height:0;overflow:hidden;transition:max-height .6s cubic-bezier(.4,0,.2,1), opacity .4s ease;opacity:0;background:#fff">
+  <section style="padding:80px 0 110px">
+    <div class="container">
+      <div class="section-head reveal">
+        <span class="eyebrow"><span class="dot"></span> Voorbeeldfoto's</span>
+        <h2>Fotografie <span class="accent">bekijken</span></h2>
+        <p>Een greep uit ons beeldwerk — vanaf de grond én vanuit de lucht. Klik op een foto voor de slideshow.</p>
+      </div>
+
+      <div class="fgrid reveal" id="fgrid">
+        <!-- Thumbnails worden door JS gerenderd o.b.v. fotoSlides array -->
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- FOTO LIGHTBOX (slideshow) -->
+<div id="flightbox" class="flightbox" onclick="closeFotoLightbox(event)">
+  <button class="flightbox-close" onclick="closeFotoLightbox(null,true)" aria-label="Sluiten">&times;</button>
+  <button class="flightbox-nav flightbox-prev" onclick="event.stopPropagation();prevFoto()" aria-label="Vorige foto">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+  </button>
+  <button class="flightbox-nav flightbox-next" onclick="event.stopPropagation();nextFoto()" aria-label="Volgende foto">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+  </button>
+  <div class="flightbox-inner">
+    <img id="flightbox-img" class="flightbox-img" src="" alt="" />
+    <div class="flightbox-caption" id="flightbox-caption"></div>
+    <div class="flightbox-counter" id="flightbox-counter"></div>
+  </div>
+  <div class="flightbox-controls" onclick="event.stopPropagation()">
+    <button class="flightbox-play" id="flightboxPlayBtn" onclick="toggleFotoAutoplay()" aria-label="Slideshow afspelen">
+      <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+      <span id="flightboxPlayLabel">Slideshow</span>
+    </button>
+  </div>
+</div>
+
+<!-- VIDEO LIGHTBOX -->
+<div id="vlightbox" class="vlightbox" onclick="closeVideo(event)">
+  <button class="vlightbox-close" onclick="closeVideo(null,true)" aria-label="Sluiten">&times;</button>
+  <div class="vlightbox-inner">
+    <iframe id="vframe" src="" frameborder="0" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+  </div>
+</div>
+
+<!-- LOCAL VIDEO LIGHTBOX (voor lokale .mp4 bestanden) -->
+<div id="localvideolb" class="vlightbox" onclick="closeLocalVideo(event)">
+  <button class="vlightbox-close" onclick="closeLocalVideo(null,true)" aria-label="Sluiten">&times;</button>
+  <div class="vlightbox-inner">
+    <video id="localvideoplayer" controls preload="metadata" playsinline style="width:100%;height:100%;border-radius:10px;background:#000"></video>
+  </div>
+</div>
+
+<!-- PANORAMA LIGHTBOX -->
+<div id="panolightbox" class="panolightbox" onclick="closePanorama(event)">
+  <button class="vlightbox-close" onclick="closePanorama(null,true)" aria-label="Sluiten">&times;</button>
+  <div class="panolightbox-inner">
+    <div id="panoViewer"></div>
+    <div class="panolightbox-caption" id="panoCaption"></div>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section id="over-ons">
+  <div class="container">
+    <div class="wrap">
+      <div class="about-visual reveal">
+        <span class="eyebrow" style="background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.18);color:#fff;align-self:flex-start">
+          <span class="dot"></span> Over Float 360
+        </span>
+        <h3 style="margin-top:20px">Gecertificeerd. Gespecialiseerd. Gedreven.</h3>
+        <p>Wij vliegen in de Specific Category en beschikken over een vergunning voor nachtvluchten. Onze drones zijn uitgerust met RGB- én thermische sensoren.</p>
+        <div class="badge-row">
+          <span class="badge">Specific Category</span>
+          <span class="badge">A1/A3 — A2 — STS</span>
+          <span class="badge">Nachtvluchten</span>
+          <span class="badge">VCA</span>
+          <span class="badge">RGB + Thermisch</span>
+          <span class="badge">Fotogrammetrie</span>
+          <span class="badge">NEN 2767</span>
+          <span class="badge">360° VR</span>
+          <span class="badge">Luchtfotografie</span>
+          <span class="badge">Luchtvideo</span>
+          <span class="badge">Orthofoto's</span>
+          <span class="badge">Volumemetingen</span>
+        </div>
+      </div>
+
+      <div class="about-copy reveal">
+        <span class="eyebrow">Over Float 360</span>
+        <h2>Wie <span class="accent">zijn</span> wij</h2>
+        <p>Float 360 is een innovatief drone- en contentbedrijf uit Twente, gespecialiseerd in het vastleggen en analyseren van de wereld vanuit een uniek perspectief: de lucht. Wat ooit begon als een passie voor beeld en techniek, is uitgegroeid tot een veelzijdige organisatie die creativiteit en precisie moeiteloos combineert.</p>
+        <p>Al sinds 2012 zijn wij actief met dronevluchten en behoren daarmee tot de pioniers in Nederland. In Overijssel waren wij één van de eersten die een officiële vergunning ontvingen van de Inspectie Leefomgeving en Transport (ILenT), een belangrijke mijlpaal die de basis legde voor onze professionele en veilige werkwijze.</p>
+        <p>Wij helpen bedrijven, overheden en organisaties om beter te kijken, slimmer te begrijpen en krachtiger te communiceren. Of het nu gaat om indrukwekkende luchtbeelden, gedetailleerde inspecties of geavanceerde 3D-modellen, wij vertalen complexe situaties naar heldere visuele inzichten.</p>
+        <p>Onze kracht ligt in de combinatie van storytelling en technische expertise. We produceren niet alleen hoogwaardige foto- en videobeelden, maar voeren ook specialistische inspecties uit aan bruggen, gebouwen en industriële installaties. Met behulp van fotogrammetrie en digital twin-technologie creëren we nauwkeurige 3D-modellen die gebruikt worden voor analyse, onderhoud en besluitvorming.</p>
+        <p>Float 360 opereert volgens de hoogste veiligheids- en kwaliteitsnormen en beschikt over een operationele autorisatie binnen de Europese regelgeving (EASA Specific categorie). Met vergunningnummer <strong>OA-020-01G</strong> voeren wij complexe drone-operaties uit, ook in gecontroleerd luchtruim en uitdagende omgevingen waar precisie en ervaring essentieel zijn.</p>
+        <p>Daarnaast ontwikkelen we innovatieve concepten zoals interactieve 360°-belevingen en platforms die steden, bedrijven en projecten op een vernieuwende manier zichtbaar maken. Hiermee brengen we niet alleen locaties tot leven, maar creëren we ook directe verbindingen tussen beleving en informatie.</p>
+        <p>Met een scherp oog voor detail, een passie voor technologie en een sterke focus op kwaliteit is Float 360 de partner voor iedereen die verder wil kijken dan de standaard.</p>
+        <div style="margin-top:30px">
+          <a href="#contact" class="btn btn-dark">Plan een kennismaking</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TEAM -->
+<section id="team" style="background:var(--bg-soft)">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow"><span class="dot"></span> Wie wij zijn</span>
+      <h2>Het <span class="accent">team</span> achter Float 360</h2>
+      <p>Een hecht team met aanvullende specialisaties — van piloot tot safety manager, ondersteund door vaste partners voor geo-data en thermografie.</p>
+    </div>
+
+    <div class="team-grid reveal">
+      <div class="team-card">
+        <div class="team-avatar"><img src="team/bob-rietveld.jpg" alt="Bob Rietveld" loading="lazy" /></div>
+        <p class="team-name">Bob Rietveld</p>
+        <p class="team-role">Videograaf &amp; piloot</p>
+      </div>
+      <div class="team-card">
+        <div class="team-avatar"><img src="team/wouter.webp" alt="Wouter Borre" loading="lazy" /></div>
+        <p class="team-name">Wouter Borre</p>
+        <p class="team-role">Piloot &amp; fotograaf</p>
+      </div>
+      <div class="team-card">
+        <div class="team-avatar"><img src="team/frits-muller.jpeg" alt="Frits Muller" loading="lazy" /></div>
+        <p class="team-name">Frits Muller</p>
+        <p class="team-role">Safety Manager</p>
+      </div>
+    </div>
+
+    <div class="team-subhead">In samenwerking met</div>
+
+    <div class="team-grid reveal" style="max-width:740px">
+      <div class="team-card team-card--partner">
+        <div class="team-avatar"><img src="team/mark-de-haan-aeret-1.webp" alt="Mark de Haan" loading="lazy" /></div>
+        <p class="team-name">Mark de Haan</p>
+        <p class="team-role">Geo-specialist</p>
+      </div>
+      <div class="team-card team-card--partner">
+        <div class="team-avatar"><img src="team/hans-godink.jpg" alt="Hans Godding" loading="lazy" /></div>
+        <p class="team-name">Hans Godding</p>
+        <p class="team-role">Thermograaf level 3</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PORTFOLIO -->
+<section id="portfolio">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">Portfolio</span>
+      <h2>Een greep uit onze <span class="accent">projecten</span></h2>
+      <p>Elk project is uniek. Van woonzorghuizen tot bruginspecties, van evenementbeveiliging tot bouwprojecten — hieronder een selectie van ons werk.</p>
+    </div>
+
+    <div class="folio-grid">
+      <a href="https://www.thuisgenoten.nl/vr/iemenschoer/" target="_blank" rel="noopener" class="folio-card folio-1 reveal" aria-label="Open VR tour Thuisgenoten Iemenschoer">
+        <div class="folio-bg"></div>
+        <div class="folio-overlay"></div>
+        <div class="folio-content">
+          <span class="folio-tag">VR Tour · Live bekijken</span>
+          <h3>Thuisgenoten — Iemenschoer</h3>
+          <p>Interactieve VR rondleiding met luchtfoto's en hotspots. Klik om de tour te openen.</p>
+        </div>
+      </a>
+      <div class="folio-card folio-2 reveal">
+        <div class="folio-bg"></div>
+        <div class="folio-overlay"></div>
+        <div class="folio-content">
+          <span class="folio-tag">Thermische inspectie</span>
+          <h3>Warmtelekkage Inspectie</h3>
+          <p>Opsporing van isolatiegebreken bij een industrieel gebouw van ASML.</p>
+        </div>
+      </div>
+      <div class="folio-card folio-3 reveal" onclick="openVideo(this,'0XiKm-GkYG8')" role="button" tabindex="0" aria-label="Bekijk video Ventofoils Chemical Challenger" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}">
+        <div class="folio-bg"></div>
+        <div class="folio-overlay"></div>
+        <div class="folio-content">
+          <span class="folio-tag">Project Registratie</span>
+          <h3>Ventofoils — Chemical Challenger</h3>
+          <p>Visuele registratie van de montage van Ventofoils aan boord van de chemicaliëntanker.</p>
+          <span class="folio-watch">▶ Bekijk hier de video</span>
+        </div>
+      </div>
+      <div class="folio-card folio-7 reveal">
+        <div class="folio-bg-cycle">
+          <div class="cycle-img" style="background-image:url('https://img.youtube.com/vi/7PzdCUpIMo0/maxresdefault.jpg')"></div>
+          <div class="cycle-img" style="background-image:url('https://img.youtube.com/vi/prNu0oLB2LY/maxresdefault.jpg')"></div>
+        </div>
+        <div class="folio-overlay"></div>
+        <div class="folio-content">
+          <span class="folio-tag">Crowd Control</span>
+          <h3>Crowd Control</h3>
+          <p>Tijdens een rally evenement, nachtvlucht en overdag t.b.v. crowd control.</p>
+          <div class="folio-actions">
+            <button type="button" class="folio-watch" onclick="event.stopPropagation();openVideo(this,'prNu0oLB2LY')" aria-label="Bekijk nachtvlucht-video">▶ Nachtvlucht</button>
+            <button type="button" class="folio-watch" onclick="event.stopPropagation();openVideo(this,'7PzdCUpIMo0')" aria-label="Bekijk overdag-video">▶ Overdag</button>
+          </div>
+        </div>
+      </div>
+      <div class="folio-card folio-8 reveal" onclick="openVideo(this,'W_pwSI7HhEs')" role="button" tabindex="0" aria-label="Bekijk video Agrarische Inspectie Oman" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}">
+        <div class="folio-bg" style="background-image:url('https://img.youtube.com/vi/W_pwSI7HhEs/maxresdefault.jpg')"></div>
+        <div class="folio-overlay"></div>
+        <div class="folio-content">
+          <span class="folio-tag">Agrarische Inspectie</span>
+          <h3>Dadelplantages — Oman</h3>
+          <p>Multispectrale drone-inspectie van dadelplantages in Oman voor het detecteren van zieke palmbomen.</p>
+          <span class="folio-watch">▶ Bekijk hier de video</span>
+        </div>
+      </div>
+      <!-- TIJDELIJK VERBORGEN — 3 portfolio-tegels. Verwijder de openingscomment hierboven en de afsluitcomment onderaan om ze weer te tonen. -->
+      <div class="folio-card folio-4 reveal" style="display:none">
+        <div class="folio-bg"></div>
+        <div class="folio-overlay"></div>
+        <div class="folio-content">
+          <span class="folio-tag">3D Model</span>
+          <h3>Bruginspectie i.s.m. Antea</h3>
+          <p>Fotogrammetrisch 3D model voor NEN-conforme inspectie.</p>
+        </div>
+      </div>
+      <div class="folio-card folio-5 reveal" style="display:none">
+        <div class="folio-bg"></div>
+        <div class="folio-overlay"></div>
+        <div class="folio-content">
+          <span class="folio-tag">Bekijk mijn Nieuwbouw</span>
+          <h3>Appartementencomplex</h3>
+          <p>Maandelijkse visuele bouwvoortgang voor kopers en ontwikkelaar.</p>
+        </div>
+      </div>
+      <div class="folio-card folio-6 reveal" style="display:none">
+        <div class="folio-bg"></div>
+        <div class="folio-overlay"></div>
+        <div class="folio-content">
+          <span class="folio-tag">Event Security</span>
+          <h3>Nachtvlucht Evenement</h3>
+          <p>Ogen in de lucht met thermische camera — publieksstroom na zonsondergang.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CLIENTS -->
+<section id="klanten">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">Klanten</span>
+      <h2>Organisaties die ons <span class="accent">vertrouwen</span></h2>
+      <p>Van gemeenten en woningcorporaties tot inspectiepartners, makelaars en industriële bedrijven — Float 360 werkt voor een brede mix van opdrachtgevers in Nederland én daarbuiten. Zo voerden wij opdrachten uit in onder meer China, Bonaire, Oman, Duitsland en Italië.</p>
+    </div>
+
+    <div class="clients-grid reveal">
+      <div class="client-tile"><img src="logo-almelo.webp" alt="Gemeente Almelo" loading="lazy" /></div>
+      <div class="client-tile"><img src="logo-gemhengelo.webp" alt="Gemeente Hengelo" loading="lazy" /></div>
+      <div class="client-tile"><img src="logo-enschede.webp" alt="Gemeente Enschede" loading="lazy" /></div>
+      <div class="client-tile"><img src="logo-dinkelland.webp" alt="Gemeente Dinkelland" loading="lazy" /></div>
+      <div class="client-tile"><img src="logo-breda.webp" alt="Gemeente Breda" loading="lazy" /></div>
+      <div class="client-tile"><img src="logo-hof-van-twente.webp" alt="Gemeente Hof van Twente" loading="lazy" /></div>
+      <div class="client-tile"><img src="logo-zwolle.webp" alt="Gemeente Zwolle" loading="lazy" /></div>
+      <div class="client-tile"><img src="logo-ntp.webp" alt="NTP" loading="lazy" /></div>
+      <div class="client-tile"><img src="logototaallift.webp" alt="Totaallift" loading="lazy" /></div>
+      <div class="client-tile"><img src="logo-anteagroup.webp" alt="Antea Group" loading="lazy" /></div>
+      <div class="client-tile"><img src="logo-aandagt.png" alt="Aandagt" loading="lazy" /></div>
+      <div class="client-tile"><img src="logo-aels.png" alt="AELS" loading="lazy" /></div>
+      <div class="client-tile"><img src="logo-almelounge.webp" alt="Almelounge" loading="lazy" /></div>
+      <div class="client-tile"><img src="logo-amf-bruns.png" alt="AMF Bruns" loading="lazy" /></div>
+      <div class="client-tile"><img src="logo-asml.png" alt="ASML" loading="lazy" /></div>
+      <div class="client-tile"><img src="logo-bonhoeffer.jpg" alt="Bonhoeffer College" loading="lazy" /></div>
+      <div class="client-tile"><img src="logo-bureau-waardenburg.webp" alt="Bureau Waardenburg" loading="lazy" /></div>
+      <div class="client-tile"><img src="logo-brandweer-twente.webp" alt="Brandweer Twente" loading="lazy" /></div>
+      <div class="client-tile"><img src="logo-btk-zorg.webp" alt="BTK Zorg" loading="lazy" /></div>
+      <div class="client-tile"><img src="logo-buitinconstr.webp" alt="Buitin Staalbouw" loading="lazy" /></div>
+      <div class="client-tile"><img src="logo-carint-reggeland.png" alt="Carint Reggeland" loading="lazy" /></div>
+      <div class="client-tile"><img src="logo-chemship.webp" alt="Chemship" loading="lazy" /></div>
+      <div class="client-tile"><img src="logo-kienhuis-bouwmanagement-logo.svg" alt="Kienhuis Bouwmanagement" loading="lazy" /></div>
+      <div class="client-tile"><img src="logo-spit.png" alt="Split" loading="lazy" /></div>
+      <div class="client-tile"><img src="logo-werkplein-twente.webp" alt="Werkplein Twente" loading="lazy" /></div>
+      <div class="client-tile"><img src="logo-kleinkromhof-2.png" alt="Klein Kromhof" loading="lazy" /></div>
+      <div class="client-tile"><img src="logo-30-jaar-de-koepel.webp" alt="De Koepel Golfbaan" loading="lazy" /></div>
+      <div class="client-tile"><img src="logo-domijn.webp" alt="Domijn Woningcorporatie" loading="lazy" /></div>
+      <div class="client-tile"><img src="logo-den-leeuw.webp" alt="Den Leeuw Koffie" loading="lazy" /></div>
+      <div class="client-tile"><img src="logo-erve-beeklust.webp" alt="Erve Beeklust" loading="lazy" /></div>
+      <div class="client-tile"><img src="logo-flexovit.png" alt="Flexovit" loading="lazy" /></div>
+      <div class="client-tile"><img src="logo-gadot.webp" alt="Gadot Group" loading="lazy" /></div>
+      <div class="client-tile"><img src="logo-heutink.png" alt="Heutink" loading="lazy" /></div>
+      <div class="client-tile"><img src="logo-home-makelaars.webp" alt="Home Makelaars" loading="lazy" /></div>
+      <div class="client-tile"><img src="logo-hollandiaservices.webp" alt="Hollandia Services" loading="lazy" /></div>
+      <div class="client-tile"><img src="logo-kamphuismakelaars.png" alt="Kamphuis Makelaars" loading="lazy" /></div>
+      <div class="client-tile"><img src="logo-kuperus.webp" alt="Kuperus" loading="lazy" /></div>
+      <div class="client-tile"><img src="logo-langezaal.png" alt="Langezaal" loading="lazy" /></div>
+      <div class="client-tile"><img src="logo-leversterbraak.png" alt="Levers ter Braak" loading="lazy" /></div>
+      <div class="client-tile"><img src="logo-natuurmonumenten.webp" alt="Natuurmonumenten" loading="lazy" /></div>
+      <div class="client-tile"><img src="logo-nam.png" alt="NAM (Nederlandse Aardolie Maatschappij)" loading="lazy" /></div>
+      <div class="client-tile"><img src="logo-ilt.png" alt="ILT (Inspectie Leefomgeving en Transport)" loading="lazy" /></div>
+      <div class="client-tile"><img src="logo-tennet.png" alt="TenneT" loading="lazy" /></div>
+      <div class="client-tile"><img src="logo-stijlgenoten.jpg" alt="Stijlgenoten" loading="lazy" /></div>
+      <div class="client-tile"><img src="logo-royal-haskoningtable.png" alt="Royal HaskoningDHV" loading="lazy" /></div>
+      <div class="client-tile"><img src="logo-nijhuisbouw.webp" alt="Nijhuis Bouw" loading="lazy" /></div>
+      <div class="client-tile"><img src="logo-panalytical.webp" alt="Panalytical" loading="lazy" /></div>
+      <div class="client-tile"><img src="logo-pillowplate.webp" alt="Pillowplate" loading="lazy" /></div>
+      <div class="client-tile"><img src="logo-prorail.jpg" alt="ProRail" loading="lazy" /></div>
+      <div class="client-tile"><img src="logo-rabelink.png" alt="Rabelink Logistics" loading="lazy" /></div>
+      <div class="client-tile"><img src="logo-reware.webp" alt="Reware" loading="lazy" /></div>
+      <div class="client-tile"><img src="logo-rijkswaterstaat.jpg" alt="Rijkswaterstaat" loading="lazy" /></div>
+      <div class="client-tile"><img src="logo-robor-electronic.webp" alt="Robor Electronics" loading="lazy" /></div>
+      <div class="client-tile"><img src="logo-rom3d.webp" alt="Rom3D" loading="lazy" /></div>
+      <div class="client-tile"><img src="logo-runbao.jpg" alt="Runbao" loading="lazy" /></div>
+      <div class="client-tile"><img src="logo-smartfloor.png" alt="Smartfloor" loading="lazy" /></div>
+      <div class="client-tile"><img src="logo-space53.webp" alt="Space 53" loading="lazy" /></div>
+      <div class="client-tile"><img src="logo-tbase.webp" alt="Technology Base" loading="lazy" /></div>
+      <div class="client-tile"><img src="logo-terre-giorgini.jpeg" alt="Terre Giordini" loading="lazy" /></div>
+      <div class="client-tile"><img src="logo-tersteege.png" alt="Ter Steege" loading="lazy" /></div>
+      <div class="client-tile"><img src="logo-thuisgenoten.png" alt="Thuisgenoten" loading="lazy" /></div>
+      <div class="client-tile"><img src="tsn-thuiszorg-groningen.webp" alt="TSN Thuiszorg" loading="lazy" /></div>
+      <div class="client-tile"><img src="logo-twente-safety-campus.webp" alt="Twente Safety Campus" loading="lazy" /></div>
+      <div class="client-tile"><img src="logo-ut.webp" alt="Universiteit Twente" loading="lazy" /></div>
+      <div class="client-tile"><img src="logo-van-buuren-groep.webp" alt="Van Buuren Groep" loading="lazy" /></div>
+      <div class="client-tile"><img src="logo-vdl.webp" alt="VDL" loading="lazy" /></div>
+      <div class="client-tile"><img src="logo-verian.webp" alt="Verian" loading="lazy" /></div>
+      <div class="client-tile"><img src="logo-veolia.webp" alt="Veolia" loading="lazy" /></div>
+      <div class="client-tile"><img src="logo-wetshuys.webp" alt="Wetshuys" loading="lazy" /></div>
+      <div class="client-tile"><img src="logo-witzand-bouwmaterialen-almelo.jpg" alt="Witzandmaterialen" loading="lazy" /></div>
+    </div>
+
+    <p class="clients-note reveal">
+      En vele anderen — <strong>wordt u de volgende?</strong>
+    </p>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">Contact</span>
+      <h2>Laten we uw project <span class="accent">bespreken</span></h2>
+      <p>Vertel ons wat u voor ogen heeft. We reageren doorgaans binnen één werkdag.</p>
+    </div>
+
+    <div class="contact-wrap">
+      <div class="contact-info reveal">
+        <h3>Direct contact</h3>
+        <p>Heeft u een specifieke vraag of wilt u direct een offerte? Gebruik de onderstaande gegevens of vul het formulier in.</p>
+        <ul class="contact-list">
+          <li>
+            <span class="contact-ico">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            </span>
+            <a class="email-link" data-u="info" data-d="float360.nl" data-text="show">…</a>
+          </li>
+          <li>
+            <span class="contact-ico">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            </span>
+            <a href="tel:+31641206662">+31 6 41 20 66 62</a>
+          </li>
+          <li>
+            <span class="contact-ico">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            </span>
+            <span>Nederland — landelijke dekking</span>
+          </li>
+          <li>
+            <span class="contact-ico">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </span>
+            <span>Ma – Vr 09:00 – 17:30</span>
+          </li>
+        </ul>
+      </div>
+
+      <form id="contactForm" class="contact-form reveal" action="https://formspree.io/f/mvzlpyne" method="POST" onsubmit="return handleContact(event)">
+        <!-- Honeypot: alleen bots vullen dit verborgen veld in -->
+        <div style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden" aria-hidden="true">
+          <label for="website">Website</label>
+          <input type="text" id="website" name="_gotcha" tabindex="-1" autocomplete="off" />
+        </div>
+
+        <div class="form-row">
+          <div>
+            <label for="naam">Naam</label>
+            <input type="text" id="naam" name="naam" placeholder="Uw volledige naam" required />
+          </div>
+          <div>
+            <label for="bedrijf">Bedrijf (optioneel)</label>
+            <input type="text" id="bedrijf" name="bedrijf" placeholder="Uw organisatie" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div>
+            <label for="email">E-mailadres</label>
+            <input type="email" id="email" name="email" placeholder="naam@bedrijf.nl" required />
+          </div>
+          <div>
+            <label for="telefoon">Telefoon (optioneel)</label>
+            <input type="tel" id="telefoon" name="telefoon" placeholder="06 – 12 34 56 78" />
+          </div>
+        </div>
+        <div>
+          <label for="dienst">Waar kunnen wij u mee helpen?</label>
+          <select id="dienst" name="dienst" required>
+            <option value="">Kies een dienst…</option>
+            <option>Videoproductie</option>
+            <option>Fotografie (grond / lucht)</option>
+            <option>360° VR Tour</option>
+            <option>3D Model / Fotogrammetrie</option>
+            <option>Thermische inspectie</option>
+            <option>NEN 2767 inspectie</option>
+            <option>Bruginspectie</option>
+            <option>Event / Beveiliging</option>
+            <option>Search &amp; Rescue</option>
+            <option>Bekijk mijn Nieuwbouw</option>
+            <option>Regio Kompas</option>
+            <option>Anders / algemene vraag</option>
+          </select>
+        </div>
+        <div>
+          <label for="bericht">Uw bericht</label>
+          <textarea id="bericht" name="bericht" placeholder="Vertel ons kort over uw project of vraag…" required></textarea>
+        </div>
+
+        <!-- Google reCAPTCHA v2 -->
+        <div style="margin-top:8px">
+          <div class="g-recaptcha" data-sitekey="6Ldiz9EsAAAAAGHYBhQJxRP9Bmo-8aKevwHx0XQX"></div>
+        </div>
+
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-top:16px">
+          <span class="form-note">Wij reageren binnen 1 werkdag.</span>
+          <button type="submit" class="btn btn-primary">Bericht versturen</button>
+        </div>
+
+        <!-- Status-bericht na verzenden -->
+        <div id="formStatus" style="display:none;margin-top:18px;padding:14px 18px;border-radius:10px;font-size:.95rem"></div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox(event)" role="dialog" aria-modal="true" aria-label="Afbeelding vergroot weergeven">
+  <button class="lightbox-close" type="button" aria-label="Sluiten" onclick="closeLightbox(event,true)">&times;</button>
+  <img id="lightbox-img" src="" alt="" />
+  <div class="lightbox-caption" id="lightbox-caption"></div>
+</div>
+
+<!-- FOOTER -->
+<footer class="site">
+  <div class="container">
+    <div class="foot-grid">
+      <div>
+        <img src="logofloat1-512-512-wit-rood.png" alt="Float 360" class="foot-logo" />
+        <p style="max-width:380px">Content creatie &amp; data inzameling met drones, thermische camera's en 360° technologie. Gecertificeerd drone operator in de Specific Category.</p>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>&copy; <span id="yr"></span> Float 360. Alle rechten voorbehouden.</span>
+      <span>KvK & BTW op aanvraag · Regio Kompas™ &amp; Bekijk mijn Nieuwbouw™ zijn concepten van Float 360.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Helper: sluit een gallery-paneel (zonder scrollen)
+  function _closeGallery(galleryId, cardId, hintId, hintText){
+    const gallery = document.getElementById(galleryId);
+    if(!gallery) return;
+    const card = document.getElementById(cardId);
+    const hint = document.getElementById(hintId);
+    if(gallery.style.maxHeight !== '0px' && gallery.style.maxHeight !== ''){
+      gallery.style.maxHeight = '0';
+      gallery.style.opacity = '0';
+      if(card) card.classList.remove('active');
+      if(hint) hint.textContent = hintText;
+    }
+  }
+
+  // Videoproducties toggle
+  function toggleVideoGallery(){
+    const gallery = document.getElementById('video-gallery');
+    const card = document.getElementById('svcVideoCard');
+    const hint = document.getElementById('svcToggleHint');
+    const isOpen = gallery.style.maxHeight !== '0px' && gallery.style.maxHeight !== '';
+    if(isOpen){
+      gallery.style.maxHeight = '0';
+      gallery.style.opacity = '0';
+      card.classList.remove('active');
+      hint.textContent = '▶ Bekijk voorbeelden';
+    } else {
+      // Sluit foto-gallery als die open staat
+      _closeGallery('foto-gallery','svcFotoCard','svcFotoToggleHint','▶ Bekijk voorbeelden');
+      gallery.style.maxHeight = gallery.scrollHeight + 2000 + 'px';
+      gallery.style.opacity = '1';
+      card.classList.add('active');
+      hint.textContent = '▲ Verberg video\'s';
+      setTimeout(()=>{ gallery.scrollIntoView({behavior:'smooth', block:'start'}); }, 100);
+    }
+  }
+
+  // Fotografie toggle
+  function toggleFotoGallery(){
+    const gallery = document.getElementById('foto-gallery');
+    const card = document.getElementById('svcFotoCard');
+    const hint = document.getElementById('svcFotoToggleHint');
+    const isOpen = gallery.style.maxHeight !== '0px' && gallery.style.maxHeight !== '';
+    if(isOpen){
+      gallery.style.maxHeight = '0';
+      gallery.style.opacity = '0';
+      card.classList.remove('active');
+      hint.textContent = '▶ Bekijk voorbeelden';
+    } else {
+      // Sluit video-gallery als die open staat
+      _closeGallery('video-gallery','svcVideoCard','svcToggleHint','▶ Bekijk voorbeelden');
+      gallery.style.maxHeight = gallery.scrollHeight + 2000 + 'px';
+      gallery.style.opacity = '1';
+      card.classList.add('active');
+      hint.textContent = '▲ Verberg foto\'s';
+      setTimeout(()=>{ gallery.scrollIntoView({behavior:'smooth', block:'start'}); }, 100);
+    }
+  }
+
+  // Foto-slideshow data — laadt geoptimaliseerde versies uit fotos-web/ (originelen in fotos/)
+  // Foto toevoegen? Zet origineel in fotos/, draai het optimaliseer-script, voeg hier een regel toe.
+  const fotoSlides = [
+    {src:"fotos-web/12.2.2024-chemical-challenger-waalhaven-16.jpg",                      caption:"Chemical Challenger — Waalhaven (12-2-2024)"},
+    {src:"fotos-web/12.2.2024-chemical-challenger-waalhaven-36.jpg",                      caption:"Chemical Challenger — Waalhaven (12-2-2024)"},
+    {src:"fotos-web/12.2.2024-chemical-challenger-waalhaven-39.jpg",                      caption:"Chemical Challenger — Waalhaven (12-2-2024)"},
+    {src:"fotos-web/12.2.2024-chemical-challenger-waalhaven-67.jpg",                      caption:"Chemical Challenger — Waalhaven (12-2-2024)"},
+    {src:"fotos-web/21.7.2023-buiting-staalbouw-3.jpg",                                     caption:"Buiting Staalbouw (21-7-2023)"},
+    {src:"fotos-web/3.6.2024-eerste-dag-brug-inspectie-utrechtboog-adam-15.jpg", caption:"Bruginspectie Utrechtboog A'dam (3-6-2024)"},
+    {src:"fotos-web/5.5.2023-chemical-ranger-40.jpg",                                       caption:"Chemical Ranger (5-5-2023)"},
+    {src:"fotos-web/5.5.2023-chemical-ranger-62.jpg",                                       caption:"Chemical Ranger (5-5-2023)"},
+    {src:"fotos-web/5.5.2023-chemical-ranger-71.jpg",                                       caption:"Chemical Ranger (5-5-2023)"},
+    {src:"fotos-web/5.5.2023-chemical-ranger-92.jpg",                                       caption:"Chemical Ranger (5-5-2023)"},
+    {src:"fotos-web/5.5.2023-chemical-ranger-109.jpg",                                      caption:"Chemical Ranger (5-5-2023)"},
+    {src:"fotos-web/7.6.2024-oeral-terschelling.jpg",                                       caption:"Oeral — Terschelling (7-6-2024)"},
+    {src:"fotos-web/9.6.2024-oeral-terschelling-6.jpg",                                     caption:"Oeral — Terschelling (9-6-2024)"},
+    {src:"fotos-web/8.1.2019-chemical-contender-198.jpg",                                   caption:"Chemical Contender (8-1-2019)"},
+    {src:"fotos-web/chemical-hunter-2-206.jpg",                                             caption:"Chemical Hunter 2"},
+    {src:"fotos-web/chemical-hunter-2-210.jpg",                                             caption:"Chemical Hunter 2"},
+    {src:"fotos-web/muiderspoorbrug-mist-10.jpg",                                             caption:"Muiderspoorbrug in de mist"},
+    {src:"fotos-web/pre-site-inspection-vleuten-spoorbruggen00002.jpg",                 caption:"Pre-site inspection — Vleuten spoorbruggen"},
+    {src:"fotos-web/dji-0011.jpg",                                                              caption:"Drone-opname"},
+    {src:"fotos-web/dji-20240806115539-0005-d.jpg",                                             caption:"Drone-opname"},
+    {src:"fotos-web/fotos-ventofoil-app-60.jpg",                                       caption:"Ventofoil — app"},
+    {src:"fotos-web/schermafbeelding-2026-03-17-om-13.13.51.jpg",                   caption:"Beeldverwerking / 3D"},
+    {src:"fotos-web/schermafbeelding-2026-03-31-om-12.35.22.jpg",                   caption:"Beeldverwerking / 3D"}
+  ];
+
+  // Render thumbnails op basis van fotoSlides — wordt aangeroepen bij DOM-ready
+  function renderFotoThumbs(){
+    const grid = document.getElementById('fgrid');
+    if(!grid) return;
+    const zoomSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>';
+    grid.innerHTML = fotoSlides.map((s, i) => {
+      const cap = (s.caption || '').replace(/"/g,'&quot;');
+      return '<div class="fthumb" onclick="openFotoLightbox(' + i + ')">'
+           +   '<img src="' + s.src + '" alt="' + cap + '" loading="lazy" />'
+           +   '<div class="fthumb-zoom">' + zoomSvg + '</div>'
+           +   '<div class="fthumb-overlay">' + cap + '</div>'
+           + '</div>';
+    }).join('');
+  }
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', renderFotoThumbs);
+  } else {
+    renderFotoThumbs();
+  }
+
+  let fotoIndex = 0;
+  let fotoAutoplayTimer = null;
+  const FOTO_AUTOPLAY_MS = 4000;
+
+  function _renderFoto(){
+    const s = fotoSlides[fotoIndex];
+    if(!s) return;
+    const img = document.getElementById('flightbox-img');
+    img.src = s.src;
+    img.alt = s.caption || '';
+    document.getElementById('flightbox-caption').textContent = s.caption || '';
+    document.getElementById('flightbox-counter').textContent = (fotoIndex+1) + ' / ' + fotoSlides.length;
+  }
+  function openFotoLightbox(i){
+    fotoIndex = (typeof i === 'number') ? i : 0;
+    _renderFoto();
+    document.getElementById('flightbox').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeFotoLightbox(e, force){
+    if(force || (e && e.target.id === 'flightbox')){
+      _stopFotoAutoplay();
+      document.getElementById('flightbox').classList.remove('open');
+      document.getElementById('flightbox-img').src = '';
+      document.body.style.overflow = '';
+    }
+  }
+  function nextFoto(){
+    fotoIndex = (fotoIndex + 1) % fotoSlides.length;
+    _renderFoto();
+  }
+  function prevFoto(){
+    fotoIndex = (fotoIndex - 1 + fotoSlides.length) % fotoSlides.length;
+    _renderFoto();
+  }
+  function _stopFotoAutoplay(){
+    if(fotoAutoplayTimer){ clearInterval(fotoAutoplayTimer); fotoAutoplayTimer = null; }
+    const lbl = document.getElementById('flightboxPlayLabel');
+    if(lbl) lbl.textContent = 'Slideshow';
+    const btn = document.getElementById('flightboxPlayBtn');
+    if(btn) btn.querySelector('svg').innerHTML = '<polygon points="5 3 19 12 5 21 5 3"/>';
+  }
+  function toggleFotoAutoplay(){
+    if(fotoAutoplayTimer){
+      _stopFotoAutoplay();
+    } else {
+      fotoAutoplayTimer = setInterval(nextFoto, FOTO_AUTOPLAY_MS);
+      document.getElementById('flightboxPlayLabel').textContent = 'Pauzeer';
+      document.getElementById('flightboxPlayBtn').querySelector('svg').innerHTML = '<rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/>';
+    }
+  }
+  document.addEventListener('keydown',(e)=>{
+    const lb = document.getElementById('flightbox');
+    if(!lb || !lb.classList.contains('open')) return;
+    if(e.key === 'Escape')      closeFotoLightbox(null,true);
+    else if(e.key === 'ArrowRight') nextFoto();
+    else if(e.key === 'ArrowLeft')  prevFoto();
+    else if(e.key === ' ')          { e.preventDefault(); toggleFotoAutoplay(); }
+  });
+
+  // Video gallery lightbox
+  function openVideo(el, videoId){
+    // Use youtube-nocookie.com for better embed compatibility (especially on file:// and custom origins)
+    // playsinline=1, modestbranding=1 for cleaner playback; rel=0 to avoid unrelated suggestions
+    var params = 'autoplay=1&rel=0&playsinline=1&modestbranding=1&fs=1';
+    document.getElementById('vframe').src = 'https://www.youtube-nocookie.com/embed/' + videoId + '?' + params;
+    document.getElementById('vlightbox').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeVideo(e, force){
+    if(force || (e && e.target.id === 'vlightbox')){
+      document.getElementById('vframe').src = '';
+      document.getElementById('vlightbox').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+  }
+  document.addEventListener('keydown',(e)=>{
+    if(e.key==='Escape' && document.getElementById('vlightbox').classList.contains('open')) closeVideo(null,true);
+  });
+
+  // Lokale video lightbox (voor .mp4 bestanden direct uit de site)
+  function openLocalVideo(src, title){
+    const lb = document.getElementById('localvideolb');
+    const v = document.getElementById('localvideoplayer');
+    v.src = src;
+    if(title) v.setAttribute('aria-label', title);
+    lb.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    setTimeout(()=>{ v.play().catch(()=>{}); }, 50);
+  }
+  function closeLocalVideo(e, force){
+    if(force || (e && e.target.id === 'localvideolb')){
+      const v = document.getElementById('localvideoplayer');
+      v.pause();
+      v.removeAttribute('src');
+      v.load();
+      document.getElementById('localvideolb').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+  }
+  document.addEventListener('keydown',(e)=>{
+    if(e.key==='Escape' && document.getElementById('localvideolb').classList.contains('open')) closeLocalVideo(null,true);
+  });
+
+  // 360° Panorama lightbox (Pannellum)
+  let panoramaInstance = null;
+  function openPanorama(imageSrc, title, opts){
+    opts = opts || {};
+    const lb = document.getElementById('panolightbox');
+    document.getElementById('panoCaption').textContent = title || '';
+    lb.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    // Wait for the lightbox to be visible (so the viewer container has dimensions) before initializing
+    setTimeout(()=>{
+      if(typeof pannellum === 'undefined'){
+        console.warn('Pannellum not loaded yet');
+        return;
+      }
+      if(panoramaInstance && panoramaInstance.destroy){
+        try{ panoramaInstance.destroy(); }catch(_){}
+        panoramaInstance = null;
+      }
+      // Default projection (matches Bellavistastraat image: cropped from top, full nadir below)
+      // Computed from XMP metadata: FullPanoHeight 2517, CroppedAreaTop 476, CroppedHeight 2040
+      const haov = opts.haov || 360;
+      const vaov = opts.vaov || 145.95;
+      const vOffset = (typeof opts.vOffset === 'number') ? opts.vOffset : -16.97;
+      panoramaInstance = pannellum.viewer('panoViewer', {
+        type: 'equirectangular',
+        panorama: imageSrc,
+        autoLoad: true,
+        compass: false,
+        title: title || '',
+        hfov: 100,
+        pitch: 0,
+        haov: haov,
+        vaov: vaov,
+        vOffset: vOffset,
+        autoRotate: -2,
+        showZoomCtrl: true,
+        showFullscreenCtrl: true,
+        mouseZoom: true,
+        crossOrigin: 'anonymous'
+      });
+    }, 80);
+  }
+  function closePanorama(e, force){
+    if(force || (e && e.target.id === 'panolightbox')){
+      if(panoramaInstance && panoramaInstance.destroy){
+        try{ panoramaInstance.destroy(); }catch(_){}
+        panoramaInstance = null;
+      }
+      document.getElementById('panolightbox').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+  }
+  document.addEventListener('keydown',(e)=>{
+    if(e.key==='Escape' && document.getElementById('panolightbox').classList.contains('open')) closePanorama(null,true);
+  });
+
+  // Current year
+  document.getElementById('yr').textContent = new Date().getFullYear();
+
+  // Reveal on scroll
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('visible'); io.unobserve(e.target);} });
+  }, {threshold:.12});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+  // Close mobile nav on link tap
+  document.querySelectorAll('#navLinks a').forEach(a=>{
+    a.addEventListener('click',()=>document.getElementById('navLinks').classList.remove('open'));
+  });
+
+  // Lightbox
+  function openLightbox(src, caption){
+    const lb = document.getElementById('lightbox');
+    document.getElementById('lightbox-img').src = src;
+    document.getElementById('lightbox-img').alt = caption || '';
+    document.getElementById('lightbox-caption').textContent = caption || '';
+    lb.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeLightbox(e, force){
+    if(force || (e && (e.target.id === 'lightbox' || e.target.classList.contains('lightbox-close')))){
+      document.getElementById('lightbox').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+  }
+  document.addEventListener('keydown', (e) => {
+    if(e.key === 'Escape' && document.getElementById('lightbox').classList.contains('open')){
+      closeLightbox(null, true);
+    }
+  });
+
+  // Contact form (front-end demo)
+  // E-mailadres-obfuscatie — pas op DOM-ready alle .email-link elementen aan
+  // Bot crawler ziet alleen losse data-attributes; menselijke gebruiker krijgt normale klikbare link
+  (function(){
+    function decodeEmails(){
+      document.querySelectorAll('.email-link').forEach(function(el){
+        var u = el.getAttribute('data-u');
+        var d = el.getAttribute('data-d');
+        if(!u || !d) return;
+        var addr = u + '@' + d;  // @ = @ — niet als string in source
+        el.setAttribute('href', 'mailto:' + addr);
+        if(el.getAttribute('data-text') === 'show' || !el.textContent.trim() || el.textContent.trim() === '…'){
+          el.textContent = addr;
+        }
+      });
+    }
+    if(document.readyState === 'loading'){
+      document.addEventListener('DOMContentLoaded', decodeEmails);
+    } else {
+      decodeEmails();
+    }
+  })();
+
+  // Contactformulier — async POST naar Formspree met reCAPTCHA-check
+  function handleContact(e){
+    e.preventDefault();
+    const form = e.target;
+    const status = document.getElementById('formStatus');
+    const submitBtn = form.querySelector('button[type="submit"]');
+
+    // Helper voor status-melding
+    function showStatus(message, type){
+      status.style.display = 'block';
+      status.textContent = message;
+      if(type === 'success'){
+        status.style.background = 'rgba(34,197,94,.1)';
+        status.style.border = '1px solid rgba(34,197,94,.35)';
+        status.style.color = '#15803d';
+      } else if(type === 'error'){
+        status.style.background = 'rgba(230,0,38,.08)';
+        status.style.border = '1px solid rgba(230,0,38,.25)';
+        status.style.color = 'var(--red-dark)';
+      } else {
+        status.style.background = 'rgba(0,0,0,.04)';
+        status.style.border = '1px solid var(--line)';
+        status.style.color = 'var(--ink)';
+      }
+    }
+
+    // reCAPTCHA validatie
+    if(typeof grecaptcha !== 'undefined'){
+      const token = grecaptcha.getResponse();
+      if(!token){
+        showStatus('Bevestig eerst dat u geen robot bent (vink "Ik ben geen robot" aan).', 'error');
+        return false;
+      }
+    }
+
+    // Honeypot extra-check (Formspree filtert dit ook server-side via _gotcha, maar dubbele veiligheid kan geen kwaad)
+    if(form.website && form.website.value){
+      // Bot ingevuld — silent fail (doe alsof het werkt, maar verstuur niets)
+      showStatus('Bedankt! Uw bericht is verzonden. Wij reageren binnen 1 werkdag.', 'success');
+      form.reset();
+      return false;
+    }
+
+    // Knop disabled tijdens verzenden
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Bezig met versturen…';
+    showStatus('Bericht wordt verzonden…', 'info');
+
+    // POST naar Formspree
+    const data = new FormData(form);
+    fetch(form.action, {
+      method: 'POST',
+      body: data,
+      headers: { 'Accept': 'application/json' }
+    })
+    .then(response => {
+      if(response.ok){
+        showStatus('Bedankt! Uw bericht is verzonden. Wij reageren binnen 1 werkdag.', 'success');
+        form.reset();
+        if(typeof grecaptcha !== 'undefined') grecaptcha.reset();
+      } else {
+        return response.json().then(data => {
+          throw new Error(data.errors ? data.errors.map(e => e.message).join(', ') : 'Er ging iets mis.');
+        });
+      }
+    })
+    .catch(err => {
+      showStatus('Helaas ging iets mis: ' + err.message + '. Probeer opnieuw of mail rechtstreeks naar info ​[at]​ float360.nl.', 'error');
+    })
+    .finally(() => {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Bericht versturen';
+    });
+
+    return false;
+  }
+</script>
+
+</body>
+</html>
